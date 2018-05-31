@@ -12,13 +12,21 @@ if [ $# -lt 5 ] ; then
     exit 1
 fi
 
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    command -v greadlink >/dev/null 2>&1 || { echo >&2 "Please install brew coreutils first. Aborting..."; exit 1; }
+fi
+
 # Variables
 MYSQL_NAME="$1_mysql"
 MYSQL_PASSWORD=$2
 DB_PATH=$3
 HOST_PORT=$4
 PHPMYADMIN_PORT=$5
-FULL_PATH=$(readlink -f $DB_PATH)
+if [[ "$OSTYPE" == "linux-gnu" ]]; then
+    FULL_PATH=$(readlink -f $DB_PATH)
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    FULL_PATH=$(greadlink -f $DB_PATH)
+fi
 PHPMYADMIN_NAME="$1_admin"
 NETWORK_NAME="$1_network"
 
